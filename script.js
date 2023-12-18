@@ -92,12 +92,17 @@ let citiesArray = [];
 // Create a function that gets user input
 function getUserInput() {
     // Add event listener to Search button to capture cities from user input
-    searchBtn.on('click', function(event) {
+    searchBtn.on('click', function (event) {
         // Prevent submit
         event.preventDefault();
         // Declare a variable to store the value of user input
         let cityEl = $('#search-input').val();
-        // console.log(cityEl);
+
+        // if there's nothing in the form entered, don't print to the page
+        if (!cityEl) {
+            alert("No city filled out in form! Please, add any city you'd like to check the weather forecast for");
+            return;
+        }
         // Push cities from user input to citiesArray 
         citiesArray.push(cityEl);
         // Call function to render cities from user input 
@@ -108,7 +113,7 @@ getUserInput();
 
 function renderInput(city) {
     $('#history').empty();
-    for (let i=0; i<citiesArray.length; i++) {
+    for (let i = 0; i < citiesArray.length; i++) {
         const cityLiEl = $('<button>');
         cityLiEl.text(citiesArray[i]);
         cityLiEl.addClass('list-group-item city');
@@ -121,6 +126,8 @@ function renderInput(city) {
 function storeCityList() {
     localStorage.setItem('city-names', JSON.stringify(citiesArray));
 }
+
+
 
 // TODO
 // 1. When user search for a city in the input, call weather API and show the result in the HTML
