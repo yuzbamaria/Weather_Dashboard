@@ -80,6 +80,7 @@ function fetchData() {
     .then(function (data) {
         console.log(data);
 
+        // Populate #today
         let date = data.list[0].dt_txt;
         todayTitle.text(cityName + " (" + date + ")");
         let temp = data.list[0].main.temp;
