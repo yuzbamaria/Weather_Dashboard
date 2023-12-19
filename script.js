@@ -31,6 +31,7 @@ function getUserInput() {
         // Call function to render cities from user input 
         renderInput();
         fetchData();
+        $('#search-input').val('');
     })
 }
 getUserInput();
@@ -41,8 +42,8 @@ function renderInput(city) {
         cityBtn = $('<button>');
         cityBtn.text(citiesArray[i]);
         cityBtn.addClass('list-group-item city');
-        // cityBtn.on('click');
         $('#history').append(cityBtn);
+        // cityBtn.on('click', fetchData);
     }
     storeCityList();
 }
@@ -51,26 +52,10 @@ function storeCityList() {
     localStorage.setItem('city-names', JSON.stringify(citiesArray));
 }
 
-// date 15/9/2022
-// icon
-// temp: in celcius
-// wind: 
-// humidity:
-
-// When a user views the current weather conditions for that city they are presented with:
-    // The city name
-    // The date
-    // An icon representation of weather conditions
-    // The temperature
-    // The humidity
-    // The wind speed
-// When a user view future weather conditions for that city they are presented with a 5-day forecast that displays:
-    // The date
-    // An icon representation of weather conditions
-    // The temperature
-    // The humidity
-
 function fetchData() {
+
+    $('#today').empty();
+    $('#forecast').empty();
     //  Build the API query URL based on the user input value
     queryURL = apiURL +  cityName + "&appid=" + apiKey;
     console.log('query: ', queryURL);
