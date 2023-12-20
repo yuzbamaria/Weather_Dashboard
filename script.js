@@ -74,11 +74,12 @@ function storeCityList() {
 // Function to fetch weather data from OpenWeatherMap API
 function fetchData() {
     // Clear today weather section 
-    todayWeather.empty();
+    // todayWeather.empty();
+    let todaySection = $('#today');
+    todaySection.empty();
     /// Clear forecast weather section
-    let forecastEl2 = $('#forecast');
-    console.log(forecastEl2);
-    forecastEl2.empty();
+    let forecastSection = $('#forecast');
+    forecastSection.empty();
     
     // let forecastEl = document.querySelector('#forecast');
     // console.log(forecastEl);
@@ -91,6 +92,7 @@ function fetchData() {
     fetch(queryURL)
     .then(response => response.json())
     .then(function (data) {
+    
         // Populate today's weather
         const todayCardContainer = $('<div>');
         todayCardContainer.addClass('card todayCardContainer');
@@ -103,6 +105,11 @@ function fetchData() {
         dateTitle = dayjs().format('DD/MM/YYYY');
         todayTitle.text(cityName + " (" + dateTitle + ")");
 
+        let icon = data.list[0].weather[0].icon;
+        let iconURL = "https://openweathermap.org/img/w/" + icon + '.png';
+        let iconImage = $('<img>');
+        iconImage.attr('src', iconURL);
+
         let temp = data.list[0].main.temp;
         let p1 = $('<p>').text("Temperature: " + temp);
         let wind = data.list[0].wind.speed;
@@ -111,7 +118,7 @@ function fetchData() {
         let p3 = $('<p>').text("Humidity: " + humidity + "%");
 
         todayCard.append(dateTitle);
-        todayCard.append(p1, p2, p3);
+        todayCard.append(iconImage, p1, p2, p3);
         todayCardContainer.append(todayCard);
         todayWeather.append(todayCardContainer);
 
@@ -132,6 +139,12 @@ function fetchData() {
             cardTitleDate.text(results[i].dt_txt);
             cardTitleDate = dayjs().format('DD/MM/YYYY');
 
+            // Create a card icon 
+            let iconForecast = data.list[0].weather[0].icon;
+            let iconForecastURL = "https://openweathermap.org/img/w/" + iconForecast + '.png';
+            let iconImageForecast = $('<img>');
+            iconImageForecast.attr('src', iconForecastURL);
+
             // Create a card text (p)
             const cardP1 = $('<p>');
             let tempForecast = results[i].main.temp;
@@ -150,7 +163,7 @@ function fetchData() {
 
             // Append title and text to card body
             cardBody.append(cardTitleDate);
-            cardBody.append(cardP1, cardP2, cardP3);
+            cardBody.append(iconImageForecast, cardP1, cardP2, cardP3);
            
             // Append card body to card container
             cardContainer.append(cardBody);
@@ -166,6 +179,7 @@ function fetchData() {
 }
 
 // Add icons 
+// Modal Bootstrap instead of alert
 // Clear today and forecast sections 
 // Add Day JS - correct date format 
 // Add Bootstrap CSS
