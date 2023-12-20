@@ -1,0 +1,44 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica,
+    Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+  font-size: 16px;
+  color: #1a1a1a;
+}
+
+body {
+    background: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+}
+
+.weather-header {
+    background: radial-gradient(circle at 12.3% 19.3%, rgb(85, 88, 218) 0%, rgb(95, 209, 249) 100.2%) !important;
+}
+
+.search-button {
+    /* text-align: inherit; */
+    /* margin: 0.5rem; */
+    width: 100%;
+    background-color: #e89471 !important;
+    color: white !important;
+  }
+
+  .city {
+    background-color: #efcfc1  !important;
+  }
+
+  /* .forecast-card {
+    width: 80%;
+    /* align-items: center !important; */
+  

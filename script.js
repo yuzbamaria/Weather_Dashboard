@@ -1,80 +1,119 @@
+// OpenWeatherMap API URL and API Key
 let apiURL = "http://api.openweathermap.org/data/2.5/forecast?q=";
 let apiKey = "1c60330a56dde7dbedc22ee4da656566"; 
 let queryURL;
+
+// DOM elements
 let searchBtn = $('#search-button');
 let cityName;
 let cityBtn;
 let todayWeather = $('#today');
-let todayTitle = $('<h2>');
 let weatherForecast = $('#forecast');
 
-
-// Create an empty array to store city names from user input in global scope
+// Array to store user's searched cities
 let citiesArray = [];
-// Create a function that gets user input
-function getUserInput() {
-    // Add event listener to Search button to capture cities from user input
-    searchBtn.on('click', function (event) {
-        // Prevent submit
-        event.preventDefault();
-        // Declare a variable to store the value of user input
-        cityName = $('#search-input').val();
-        console.log('User input:', cityName);
 
-        // if there's nothing in the form entered, don't print to the page
+// Function to handle user input
+function getUserInput() {
+    // Event listener for search button click
+    searchBtn.on('click', function (event) {
+        event.preventDefault();
+         // Get the value of user input city name
+        cityName = $('#search-input').val();
+        // console.log('User input:', cityName);
+        // Validate user input
         if (!cityName) {
             alert("No city filled out in form! Please, add any city you'd like to check the weather forecast for");
             return;
         }
-        // Push cities from user input to citiesArray 
+        // Add city to the array and update UI
         citiesArray.push(cityName);
-        // Call function to render cities from user input 
         renderInput();
+        // Fetch weather data for the selected city
         fetchData();
+        // Clear the input field
         $('#search-input').val('');
     })
 }
+// Initial call to getUserInput function
 getUserInput();
 
+// Function to render user's search history
 function renderInput(city) {
+    // Clear the search history container
     $('#history').empty();
+    // Iterate through the cities array and create buttons
     for (let i = 0; i < citiesArray.length; i++) {
         cityBtn = $('<button>');
         cityBtn.text(citiesArray[i]);
         cityBtn.addClass('list-group-item city');
+         // Append buttons to the search history container
         $('#history').append(cityBtn);
-        // cityBtn.on('click', fetchData);
+
+        // Event listener for city button click
+        $('#history').on('click', '.city', function() {
+            // $('#history').empty();
+            // $('#search-input').val('');
+            const selectedCity = $(this).text();
+            // Set the selected city as the current city and fetch data
+            cityName = selectedCity;
+            // todayWeather.empty();
+            // weatherForecast.empty();
+            fetchData();
+        });
     }
+    // Store the updated city list in local storage
     storeCityList();
 }
 
+// Function to store the city list in local storage
 function storeCityList() {
     localStorage.setItem('city-names', JSON.stringify(citiesArray));
 }
 
+// Function to fetch weather data from OpenWeatherMap API
 function fetchData() {
+    // Clear today weather section 
+    todayWeather.empty();
+    /// Clear forecast weather section
+    let forecastEl2 = $('#forecast');
+    console.log(forecastEl2);
+    forecastEl2.empty();
+    
+    // let forecastEl = document.querySelector('#forecast');
+    // console.log(forecastEl);
+    // forecastEl.innerHTML = '';
+    // console.log(forecastEl);
 
-    $('#today').empty();
-    $('#forecast').empty();
     //  Build the API query URL based on the user input value
     queryURL = apiURL +  cityName + "&appid=" + apiKey;
-    console.log('query: ', queryURL);
-
+    // Fetch data from the API
     fetch(queryURL)
     .then(response => response.json())
     .then(function (data) {
-        console.log(data);
+        // Populate today's weather
+        const todayCardContainer = $('<div>');
+        todayCardContainer.addClass('card todayCardContainer');
 
-        // Populate #today
-        let date = data.list[0].dt_txt;
-        todayTitle.text(cityName + " (" + date + ")");
+        const todayCard = $('<div>');
+        todayCard.addClass('card-body todayCard');
+
+        let todayTitle = $('<h3>');
+        let dateTitle = data.list[0].dt_txt;
+        dateTitle = dayjs().format('DD/MM/YYYY');
+        todayTitle.text(cityName + " (" + dateTitle + ")");
+
         let temp = data.list[0].main.temp;
         let p1 = $('<p>').text("Temperature: " + temp);
         let wind = data.list[0].wind.speed;
         let p2 = $('<p>').text("Wind: " + wind + " KPH");
         let humidity = data.list[0].main.humidity;
         let p3 = $('<p>').text("Humidity: " + humidity + "%");
-        todayWeather.append(todayTitle, p1, p2, p3);
+
+        todayCard.append(dateTitle);
+        todayCard.append(p1, p2, p3);
+        todayCardContainer.append(todayCard);
+        todayWeather.append(todayCardContainer);
 
         // Populate #forecast
         // Create a card container
@@ -88,10 +127,10 @@ function fetchData() {
             cardBody.addClass('card-body');
 
             // Create a card title (h5)
-            const cardTitle = $('<h5>');
-            cardTitle.addClass('card-title');
-            cardTitle.text(results[i].dt_txt);
-            console.log(cardTitle);
+            let cardTitleDate = $('<h5>');
+            cardTitleDate.addClass('card-title');
+            cardTitleDate.text(results[i].dt_txt);
+            cardTitleDate = dayjs().format('DD/MM/YYYY');
 
             // Create a card text (p)
             const cardP1 = $('<p>');
@@ -110,16 +149,14 @@ function fetchData() {
             cardP3.text("Humidity: " + humidityForecast + "%");
 
             // Append title and text to card body
-            cardBody.append(cardTitle);
+            cardBody.append(cardTitleDate);
             cardBody.append(cardP1, cardP2, cardP3);
-            console.log(cardBody);
-            
+           
             // Append card body to card container
             cardContainer.append(cardBody);
 
             // Append the card to the forecast section
             weatherForecast.append(cardContainer);
-
         }
     })
     .catch(function (error) {
@@ -128,69 +165,8 @@ function fetchData() {
    
 }
 
-function renderToday() {
-}
-
-function renderForecast() {
-}
-
-
-// function fetchCityWeather() {
-//     //  Build the API query URL based on the user input value
-//         queryURL = apiURL + userInputValue + "&appid=" + apiKey;
-//         console.log('query: ', queryURL);
-//         // Fetch data from the API using the constructed query URL
-//         fetch(queryURL)
-//             // Using the .then method to handle the response from the fetch operation
-//             .then(function (response) {
-//                 // Parse the response as JSON
-//                 // Returns a Promise that resolves to the parsed JSON data
-//                 return response.json();
-//             })
-//             .then(function (data) {
-//                 // Log the entire data object and the articles array to the console
-//                 console.log(data);
-//                 console.log(data.city.name);
-//             });
-//         }
-    
-    
-
-
-
-// TODO
-// 1. When user search for a city in the input, call weather API and show the result in the HTML
-//    - Add event listener to form submit
-//    - Get the user input value
-//    - Build the API query URL based on the user input value
-//    - Call the API and render the result in the HTML
-//        - Get the city name and show it in the main weather forecast card
-//        - Get the first weather forecast item and get the following values
-//            - date
-//            - temperature
-//            - wind speed
-//            - humidity
-//            - icon
-//        - render those values to the main card
-//        - Loop through all weathers array and get the following values
-//            - date
-//            - temperature
-//            - wind speed
-//            - humidity
-//            - icon
-//        - render those values to the smaller card
-// 2. When user search for a city, store it in local storage
-// 3. On initial page load load the search history and show it as a list in the HTML
-//    - ....
-//    - Build the API query URL based on the history stored in local storage
-//    - Call the API and render the result in the HTML
-// 4. When user click on the search history, call weather API and show the result in the HTML
-// 5. CSS
-
-// fetch('https://api.openweathermap.org/data/2.5/forecast?q=london&appid=[api-key]&units=metric')
-//     .then(function(response) {
-//         return response.json();
-//     })
-//     .then(function(data) {
-//         console.log(data);
-//     })
+// Add icons 
+// Clear today and forecast sections 
+// Add Day JS - correct date format 
+// Add Bootstrap CSS
+// Check responsiveness
