@@ -5,10 +5,11 @@ let queryURL;
 
 // DOM elements
 let searchBtn = $('#search-button');
-let cityName;
-let cityBtn;
 let todayWeather = $('#today');
 let weatherForecast = $('#forecast');
+
+let cityName;
+let cityBtn;
 
 // Array to store user's searched cities
 let citiesArray = [];
@@ -92,6 +93,7 @@ function fetchData() {
     fetch(queryURL)
     .then(response => response.json())
     .then(function (data) {
+        console.log(data);
     
         // Populate today's weather
         const todayCardContainer = $('<div>');
@@ -100,16 +102,22 @@ function fetchData() {
         const todayCard = $('<div>');
         todayCard.addClass('card-body todayCard');
 
-        let todayTitle = $('<h3>');
-        let dateTitle = data.list[0].dt_txt;
-        dateTitle = dayjs().format('DD/MM/YYYY');
-        todayTitle.text(cityName + " (" + dateTitle + ")");
+        // Create City element as part of the title
+        // Create data as a part of a title
+        let dateTitleToday = data.list[0].dt_txt;
+        dateTitleToday = dayjs().format('DD/MM/YYYY');
 
         let icon = data.list[0].weather[0].icon;
         let iconURL = "https://openweathermap.org/img/w/" + icon + '.png';
         let iconImage = $('<img>');
         iconImage.attr('src', iconURL);
 
+        let todayTitle = $('<h4>');
+        todayTitle.text(cityName + " (" + dateTitleToday + ")");
+        todayTitle.append(iconImage);
+        console.log(todayTitle);
+        
+      
         let temp = data.list[0].main.temp;
         let p1 = $('<p>').text("Temperature: " + temp);
         let wind = data.list[0].wind.speed;
@@ -117,8 +125,8 @@ function fetchData() {
         let humidity = data.list[0].main.humidity;
         let p3 = $('<p>').text("Humidity: " + humidity + "%");
 
-        todayCard.append(dateTitle);
-        todayCard.append(iconImage, p1, p2, p3);
+        todayCard.append(todayTitle);
+        todayCard.append(p1, p2, p3);
         todayCardContainer.append(todayCard);
         todayWeather.append(todayCardContainer);
 
@@ -127,17 +135,19 @@ function fetchData() {
         let results = data.list;
         for (let i=0; i<results.length; i++) {
             const cardContainer = $('<div>');
-            cardContainer.addClass('card', 'mb-3');
+            cardContainer.addClass('card custom-card', 'mb-3');
 
             // Create a card body
             const cardBody = $('<div>');
             cardBody.addClass('card-body');
 
             // Create a card title (h5)
-            let cardTitleDate = $('<h5>');
-            cardTitleDate.addClass('card-title');
-            cardTitleDate.text(results[i].dt_txt);
-            cardTitleDate = dayjs().format('DD/MM/YYYY');
+            let forecastTitle = $('<h5>');
+            forecastTitle.addClass('card-title');
+            let dateTitleForecast = results[i].dt_txt;
+            dateTitleForecast = dayjs().format('DD/MM/YYYY');
+            forecastTitle.text(dateTitleForecast);
+            
 
             // Create a card icon 
             let iconForecast = data.list[0].weather[0].icon;
@@ -161,9 +171,10 @@ function fetchData() {
             cardP3.addClass('card-text2');
             cardP3.text("Humidity: " + humidityForecast + "%");
 
+            forecastTitle.append(iconImageForecast);
             // Append title and text to card body
-            cardBody.append(cardTitleDate);
-            cardBody.append(iconImageForecast, cardP1, cardP2, cardP3);
+            cardBody.append(forecastTitle);
+            cardBody.append(cardP1, cardP2, cardP3);
            
             // Append card body to card container
             cardContainer.append(cardBody);
