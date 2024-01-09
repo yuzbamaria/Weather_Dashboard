@@ -157,10 +157,13 @@ function fetchData() {
 
         // Populate #forecast
         // Create a card container
-        // let results = data.list;
+        let cardCount = 0; // Counter variable
+
         for (const date in dailyForecast) {
+            if (cardCount >= 5) {
+                break; // Exit the loop after creating 5 cards
+            }
             const dailyData = dailyForecast[date];
-            // console.log(results[i].dt_txt);
             const cardMain = $('<div>');
             cardMain.addClass('cardMain col-lg-2 col-md-4 col-sm-6 p-1 mb-3');
 
@@ -221,8 +224,12 @@ function fetchData() {
 
             // Append the card to the forecast section
             weatherForecast.append(cardMain);
+
+            cardCount++; // Increment the counter
+
         }
     })
+    
     .catch(function (error) {
             console.error('Error:', error);
     });
