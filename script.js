@@ -27,29 +27,25 @@ function getUserInput() {
             alert("No city filled out in form! Please, add any city you'd like to check the weather forecast for");
             return;
         }
-        // Add city to the array and update UI
-        citiesArray.push(cityName);
-        renderInput();
+
+        // Check if the city name already exists in the array
+        const isDuplicate = citiesArray.includes(cityName);
+
         // Fetch weather data for the selected city
         fetchData();
+
         // Clear the input field
         $('#search-input').val('');
-    })
+
+        // Add city to the array and update UI only if it's not a duplicate
+        if (!isDuplicate) {
+            citiesArray.push(cityName);
+            renderInput();
+        }
+    });
 }
 // Initial call to getUserInput function
 getUserInput();
-
-// // Function to add history section if there's user input in local storage
-// function checkLocalStorage() {
-//     // Retrieve highscores from localStorage and parse it
-//     let checkCitiesLS = $.parseJSON(localStorage.getItem('#history'));
-//     // Check if there is existing history in localStorage
-//     if (checkCitiesLS !== null) {
-//          // If no existing history, push the current history to the array 
-//          // and save to localStorage
-//          renderInput();
-//      }
-// }
 
 // Function to render user's search history
 function renderInput(city) {
@@ -82,6 +78,23 @@ function storeCityList() {
     localStorage.setItem('city-names', JSON.stringify(citiesArray));
 }
 
+// Function to convert and round temperature from Kelvin to Celsius
+function kelvinToCelsius(tempK) {
+    // Convert Kelvin to Celsius
+    const tempC = tempK - 273.15;
+
+    // Round the temperature
+    const roundedCelsius = Math.round(tempC);
+    return roundedCelsius;
+}
+
+// Function to round wind speed
+function roundWindSpeed(windSpeed) {
+    // Round the wind speed
+    const roundedWindSpeed = Math.round(windSpeed);
+    return roundedWindSpeed;
+}
+
 // Function to fetch weather data from OpenWeatherMap API
 function fetchData() {
     // Clear today weather section 
@@ -107,18 +120,18 @@ function fetchData() {
     
         // Populate today's weather
         const todayMain = $('<div>');
-        todayMain.addClass('todayMain col-lg-10 col-md-9 col-sm-12 pb-5 mx-auto');
+        todayMain.addClass('todayMain col-lg-12 col-md-9 col-sm-9 pb-2 mx-auto');
 
         const todayCardContainer = $('<div>');
-        todayCardContainer.addClass('card align-items-center shadow');
+        todayCardContainer.addClass('card shadow background-image');
 
         const todayCard = $('<div>');
-        todayCard.addClass('card-body text-center');
+        todayCard.addClass('card-body text-left');
 
         // Create City element as part of the title
         // Create data as a part of a title
         let dateTitleToday = data.list[0].dt_txt;
-        dateTitleToday = dayjs().format('DD/MM/YYYY');
+        dateTitleToday = dayjs().format('ddd, DD MMM');
 
         let icon = data.list[0].weather[0].icon;
         let iconURL = "https://openweathermap.org/img/w/" + icon + '.png';
@@ -131,9 +144,9 @@ function fetchData() {
         console.log(todayTitle);
         
       
-        let temp = data.list[0].main.temp;
-        let p1 = $('<p>').text("Temperature: " + temp);
-        let wind = data.list[0].wind.speed;
+        let temp = kelvinToCelsius(data.list[0].main.temp);
+        let p1 = $('<p>').text("Temperature: " + temp + " °C");
+        let wind = roundWindSpeed(data.list[0].wind.speed);
         let p2 = $('<p>').text("Wind: " + wind + " KPH");
         let humidity = data.list[0].main.humidity;
         let p3 = $('<p>').text("Humidity: " + humidity + "%");
@@ -148,44 +161,49 @@ function fetchData() {
         const dailyForecast = {};
         // Iterate through the results and group data by day
         for (let i = 0; i < data.list.length; i++) {
-            const date = dayjs(data.list[i].dt_txt).format('YYYY-MM-DD');
+            const date = dayjs(data.list[i].dt_txt).format('ddd, DD MMM');
             if (!dailyForecast[date]) {
                 dailyForecast[date] = data.list[i];
             }
         }
 
-
         // Populate #forecast
         // Create a card container
         let cardCount = 0; // Counter variable
 
+        const forecastText = $('<h4>').text('5-day forecast:');
+        forecastText.addClass('text-center');
+        weatherForecast.append(forecastText);
+
         for (const date in dailyForecast) {
+            // Skip today's forecast
+            if (cardCount === 0 && dayjs(date).isSame(dayjs(), 'day')) {
+                continue;
+            }
+
             if (cardCount >= 5) {
                 break; // Exit the loop after creating 5 cards
             }
             const dailyData = dailyForecast[date];
             const cardMain = $('<div>');
-            cardMain.addClass('cardMain col-lg-2 col-md-4 col-sm-6 p-1 mb-3');
+            cardMain.addClass('cardMain col-lg-2 col-md-4 col-sm-9 mb-3');
 
             const cardContainer = $('<div>');
             cardContainer.addClass('card align-items-center shadow custom-card');
 
             // Create a card body
             const cardBody = $('<div>');
-            cardBody.addClass('card-body');
+            cardBody.addClass('card-body forecast-card');
 
             // Create a card title (h5)
-            let forecastTitle = $('<h5>');
+            let forecastTitle = $('<h6>');
             forecastTitle.addClass('card-title');
             // let dateForecast = results[i].dt_txt;
             // dateForecast = dayjs(dateForecast).format('DD/MM/YYYY');
             let dateForecast = dailyData.dt_txt;
-            dateForecast = dayjs(dateForecast).format('DD/MM/YYYY');
-
-        
+            dateForecast = dayjs(dateForecast).format('ddd, DD MMM');
             forecastTitle.text(dateForecast);
             
-
             // Create a card icon 
             // let iconForecast = data.list[0].weather[0].icon; 
             let iconForecast = dailyData.weather[0].icon;
@@ -196,13 +214,13 @@ function fetchData() {
             // Create a card text (p)
             const cardP1 = $('<p>');
             // let tempForecast = results[i].main.temp;
-            let tempForecast = dailyData.main.temp;
+            let tempForecast = kelvinToCelsius(dailyData.main.temp);
             cardP1.addClass('card-text1');
-            cardP1.text("Temperature: " + tempForecast);
+            cardP1.text("Temperature: " + tempForecast + " °C");
 
             const cardP2 = $('<p>');
             // let windForecast = results[i].wind.speed;
-            let windForecast = dailyData.wind.speed;
+            let windForecast = roundWindSpeed(dailyData.wind.speed);
             cardP2.addClass('card-text2');
             cardP2.text("Wind: " + windForecast + " KPH");
 
@@ -229,17 +247,9 @@ function fetchData() {
 
         }
     })
-    
+
     .catch(function (error) {
             console.error('Error:', error);
     });
    
 }
-
-// Add icons 
-// Modal Bootstrap instead of alert
-// Clear today and forecast sections 
-// Add Day JS - correct date format 
-// Add Bootstrap CSS
-// Check responsiveness
-// When the page loads, check if there's smth in local Storage, if yes, dispplay it

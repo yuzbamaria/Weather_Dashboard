@@ -27,8 +27,6 @@ body {
 }
 
 .search-button {
-    /* text-align: inherit; */
-    /* margin: 0.5rem; */
     width: 100%;
     background-color: #e89471 !important;
     color: white !important;
@@ -42,8 +40,7 @@ body {
     background-color: #ecd5cc !important;
   }
 
+.forecast-card {
+  padding: 2px !important;
+}
 
-  /* .forecast-card {
-    width: 80%;
-    /* align-items: center !important; */
-  
