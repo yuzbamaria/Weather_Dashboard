@@ -39,6 +39,18 @@ function getUserInput() {
 // Initial call to getUserInput function
 getUserInput();
 
+// // Function to add history section if there's user input in local storage
+// function checkLocalStorage() {
+//     // Retrieve highscores from localStorage and parse it
+//     let checkCitiesLS = $.parseJSON(localStorage.getItem('#history'));
+//     // Check if there is existing history in localStorage
+//     if (checkCitiesLS !== null) {
+//          // If no existing history, push the current history to the array 
+//          // and save to localStorage
+//          renderInput();
+//      }
+// }
+
 // Function to render user's search history
 function renderInput(city) {
     // Clear the search history container
@@ -47,14 +59,12 @@ function renderInput(city) {
     for (let i = 0; i < citiesArray.length; i++) {
         cityBtn = $('<button>');
         cityBtn.text(citiesArray[i]);
-        cityBtn.addClass('list-group-item city');
+        cityBtn.addClass('list-group-item mb-2 city');
          // Append buttons to the search history container
         $('#history').append(cityBtn);
 
         // Event listener for city button click
-        $('#history').on('click', '.city', function() {
-            // $('#history').empty();
-            // $('#search-input').val('');
+        cityBtn.on('click', function() {
             const selectedCity = $(this).text();
             // Set the selected city as the current city and fetch data
             cityName = selectedCity;
@@ -96,11 +106,14 @@ function fetchData() {
         console.log(data);
     
         // Populate today's weather
+        const todayMain = $('<div>');
+        todayMain.addClass('todayMain col-lg-10 col-md-9 col-sm-12 pb-5 mx-auto');
+
         const todayCardContainer = $('<div>');
-        todayCardContainer.addClass('card todayCardContainer');
+        todayCardContainer.addClass('card align-items-center shadow');
 
         const todayCard = $('<div>');
-        todayCard.addClass('card-body todayCard');
+        todayCard.addClass('card-body text-center');
 
         // Create City element as part of the title
         // Create data as a part of a title
@@ -128,14 +141,31 @@ function fetchData() {
         todayCard.append(todayTitle);
         todayCard.append(p1, p2, p3);
         todayCardContainer.append(todayCard);
-        todayWeather.append(todayCardContainer);
+        todayMain.append(todayCardContainer);
+        todayWeather.append(todayMain);
+
+        // Group forecast data by day
+        const dailyForecast = {};
+        // Iterate through the results and group data by day
+        for (let i = 0; i < data.list.length; i++) {
+            const date = dayjs(data.list[i].dt_txt).format('YYYY-MM-DD');
+            if (!dailyForecast[date]) {
+                dailyForecast[date] = data.list[i];
+            }
+        }
+
 
         // Populate #forecast
         // Create a card container
-        let results = data.list;
-        for (let i=0; i<results.length; i++) {
+        // let results = data.list;
+        for (const date in dailyForecast) {
+            const dailyData = dailyForecast[date];
+            // console.log(results[i].dt_txt);
+            const cardMain = $('<div>');
+            cardMain.addClass('cardMain col-lg-2 col-md-4 col-sm-6 p-1 mb-3');
+
             const cardContainer = $('<div>');
-            cardContainer.addClass('card custom-card', 'mb-3');
+            cardContainer.addClass('card align-items-center shadow custom-card');
 
             // Create a card body
             const cardBody = $('<div>');
@@ -144,30 +174,38 @@ function fetchData() {
             // Create a card title (h5)
             let forecastTitle = $('<h5>');
             forecastTitle.addClass('card-title');
-            let dateTitleForecast = results[i].dt_txt;
-            dateTitleForecast = dayjs().format('DD/MM/YYYY');
-            forecastTitle.text(dateTitleForecast);
+            // let dateForecast = results[i].dt_txt;
+            // dateForecast = dayjs(dateForecast).format('DD/MM/YYYY');
+            let dateForecast = dailyData.dt_txt;
+            dateForecast = dayjs(dateForecast).format('DD/MM/YYYY');
+
+        
+            forecastTitle.text(dateForecast);
             
 
             // Create a card icon 
-            let iconForecast = data.list[0].weather[0].icon;
+            // let iconForecast = data.list[0].weather[0].icon; 
+            let iconForecast = dailyData.weather[0].icon;
             let iconForecastURL = "https://openweathermap.org/img/w/" + iconForecast + '.png';
             let iconImageForecast = $('<img>');
             iconImageForecast.attr('src', iconForecastURL);
 
             // Create a card text (p)
             const cardP1 = $('<p>');
-            let tempForecast = results[i].main.temp;
+            // let tempForecast = results[i].main.temp;
+            let tempForecast = dailyData.main.temp;
             cardP1.addClass('card-text1');
             cardP1.text("Temperature: " + tempForecast);
 
             const cardP2 = $('<p>');
-            let windForecast = results[i].wind.speed;;
+            // let windForecast = results[i].wind.speed;
+            let windForecast = dailyData.wind.speed;
             cardP2.addClass('card-text2');
             cardP2.text("Wind: " + windForecast + " KPH");
 
             const cardP3 = $('<p>');
-            let humidityForecast = results[i].main.humidity;;
+            // let humidityForecast = results[i].main.humidity;
+            let humidityForecast = dailyData.main.humidity;
             cardP3.addClass('card-text2');
             cardP3.text("Humidity: " + humidityForecast + "%");
 
@@ -179,8 +217,10 @@ function fetchData() {
             // Append card body to card container
             cardContainer.append(cardBody);
 
+            cardMain.append(cardContainer);
+
             // Append the card to the forecast section
-            weatherForecast.append(cardContainer);
+            weatherForecast.append(cardMain);
         }
     })
     .catch(function (error) {
@@ -195,3 +235,4 @@ function fetchData() {
 // Add Day JS - correct date format 
 // Add Bootstrap CSS
 // Check responsiveness
+// When the page loads, check if there's smth in local Storage, if yes, dispplay it
