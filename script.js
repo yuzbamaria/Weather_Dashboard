@@ -1,6 +1,6 @@
 // OpenWeatherMap API URL and API Key
-let apiURL = "http://api.openweathermap.org/data/2.5/forecast?q=";
-let apiKey = "711c18df02bcaf11bc39a46095beb68a"; 
+let apiURL = "https://api.openweathermap.org/data/2.5/forecast?q=";
+let apiKey = "1c60330a56dde7dbedc22ee4da656566"; 
 let queryURL;
 
 // DOM elements
