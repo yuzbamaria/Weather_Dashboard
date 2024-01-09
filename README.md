@@ -2,23 +2,36 @@
 
 ## Description
 This is the solution for the challenge from EdX bootcamp, Week 8, Day 4.
-During Week 8 at the bootcamp, I learnt DOM, Vanilla JS, local storage and my task was to apply the skills I got and create a timed coding quiz with multiple-choice questions. 
-This app runs in the browser, and featurea dynamically updated HTML and CSS powered by JavaScript code. It has a clean, polished, and responsive user interface. 
+During Week 8 at the bootcamp, I learnt Learn how to send, receive, and manipulate data from external sources using modern web-based protocols (I particularly delved into accessing data on RESTful web APIs using
+AJAX calls, processing return data to isolate key elements for JavaScript logic, generating page elements based on API
+responses). 
+
+And my this week challenge was to build a weather dashboard that will run in the browser and feature dynamically updated HTML and CSS.
 
 ## User Story 
-- AS A coding boot camp student
-- I WANT to take a timed quiz on JavaScript fundamentals that stores high scores
-- SO THAT I can gauge my progress compared to my peers
+
+- AS A traveler
+- I WANT to see the weather outlook for multiple cities
+- SO THAT I can plan a trip accordingly
 
 ## Acceptance Criteria
 The criteria I need to take into account are the following:
 
-- A start button that when clicked a timer starts and the first question appears.
-  - Questions contain buttons for each answer.
-  - When answer is clicked, the next question appears.
-  - If the answer clicked was incorrect then subtract time from the clock.
-- The quiz should end when all questions are answered or the timer reaches 0.
-  - When the game ends, it should display their score and give the user the ability to save their initials and their score.
+- Create a weather dashboard with form inputs.
+  - When a user searches for a city they are presented with current and future conditions for that city and that city is added to the search history
+  - When a user views the current weather conditions for that city they are presented with:
+    - The city name
+    - The date
+    - An icon representation of weather conditions
+    - The temperature
+    - The humidity
+    - The wind speed
+  - When a user view future weather conditions for that city they are presented with a 5-day forecast that displays:
+    - The date
+    - An icon representation of weather conditions
+    - The temperature
+    - The humidity
+  - When a user click on a city in the search history they are again presented with current and future conditions for that city
  
 ## A link to the deployed application
 https://yuzbamaria.github.io/Weather_Dashboard/ 
