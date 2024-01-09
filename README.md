@@ -2,7 +2,7 @@
 
 ## Description
 This is the solution for the challenge from EdX bootcamp, Week 8, Day 4.
-During Week 8 at the bootcamp, I learnt Learn how to send, receive, and manipulate data from external sources using modern web-based protocols (I particularly delved into accessing data on RESTful web APIs using
+During Week 8 at the bootcamp, I learnt how to send, receive, and manipulate data from external sources using modern web-based protocols (I particularly delved into accessing data on RESTful web APIs using
 AJAX calls, processing return data to isolate key elements for JavaScript logic, generating page elements based on API
 responses). 
 
