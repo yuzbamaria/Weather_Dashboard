@@ -10,6 +10,8 @@ let weatherForecast = $('#forecast');
 
 let cityName;
 let cityBtn;
+let storedCityList = JSON.parse(localStorage.getItem('city-names'));
+console.log(storedCityList);
 
 // Array to store user's searched cities
 let citiesArray = [];
@@ -76,6 +78,30 @@ function renderInput(city) {
 // Function to store the city list in local storage
 function storeCityList() {
     localStorage.setItem('city-names', JSON.stringify(citiesArray));
+}
+
+function getStoredCityList() {
+    if (storedCityList) {
+        console.log('something is in local storage')
+       for (i = 0; i < storedCityList.length; i++) {
+        console.log(storedCityList[i]);
+        cityBtn = $('<button>');
+        cityBtn.text(storedCityList[i]);
+        cityBtn.addClass('list-group-item mb-2 city');
+         // Append buttons to the search history container
+        $('#history').append(cityBtn);
+        cityBtn.on('click', function() {
+            const selectedCity = $(this).text();
+            // Set the selected city as the current city and fetch data
+            cityName = selectedCity;
+            // todayWeather.empty();
+            // weatherForecast.empty();
+            fetchData();
+        });
+       }
+    } else {
+        console.log('nothing is in local storage')
+    }
 }
 
 // Function to convert and round temperature from Kelvin to Celsius
@@ -253,3 +279,5 @@ function fetchData() {
     });
    
 }
+
+getStoredCityList();
